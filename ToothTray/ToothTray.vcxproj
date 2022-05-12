@@ -111,8 +111,8 @@
     <ResourceCompile Include="ToothTray.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="..\..\..\..\Downloads\images\ToothTray.ico" />
     <Image Include="small.ico" />
-    <Image Include="ToothTray.ico" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
