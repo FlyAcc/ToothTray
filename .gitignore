@@ -1,0 +1,8 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs/ToothTray/v17
+/packages
+/x64/Debug
+/ToothTray/x64

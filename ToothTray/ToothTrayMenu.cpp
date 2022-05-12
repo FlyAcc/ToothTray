@@ -2,6 +2,7 @@
 
 #include <unordered_map>
 #include <windowsx.h>
+#include <Windows.h>
 
 void ToothTrayMenu::BuildMenu(std::vector<BluetoothConnector>& connectors) {
     m_handle.reset(CreatePopupMenu());
@@ -19,9 +20,31 @@ void ToothTrayMenu::BuildMenu(std::vector<BluetoothConnector>& connectors) {
     InsertBluetoohConnectorMenuItem(IDM_EXIT, menuPosition, (WCHAR*)L"Exit");
 }
 
+double GetScaleFactor() {
+    auto activeWindow = GetActiveWindow();
+    HMONITOR monitor = MonitorFromWindow(activeWindow, MONITOR_DEFAULTTONEAREST);
+
+    // Get the logical width and height of the monitor
+    MONITORINFOEX monitorInfoEx;
+    monitorInfoEx.cbSize = sizeof(monitorInfoEx);
+    GetMonitorInfo(monitor, &monitorInfoEx);
+    auto cxLogical = monitorInfoEx.rcMonitor.right - monitorInfoEx.rcMonitor.left;
+
+    // Get the physical width and height of the monitor
+    DEVMODE devMode;
+    devMode.dmSize = sizeof(devMode);
+    devMode.dmDriverExtra = 0;
+    EnumDisplaySettings(monitorInfoEx.szDevice, ENUM_CURRENT_SETTINGS, &devMode);
+    auto cxPhysical = devMode.dmPelsWidth;
+
+    // Calculate the scaling factor
+    return ((double)cxPhysical / (double)cxLogical);
+}
+
 void ToothTrayMenu::ShowPopupMenu(HWND hwnd, WPARAM mousPosWParam) {
-    int x = GET_X_LPARAM(mousPosWParam);
-    int y = GET_Y_LPARAM(mousPosWParam);
+    double scaleFactor = GetScaleFactor();
+    int x = (int) GET_X_LPARAM(mousPosWParam) / scaleFactor;
+    int y = (int) GET_Y_LPARAM(mousPosWParam) / scaleFactor;
 
     // https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-trackpopupmenuex
     // To display a context menu for a notification icon, the current window must be the foreground window before the application calls TrackPopupMenu or TrackPopupMenuEx.
